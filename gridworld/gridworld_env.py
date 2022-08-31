@@ -8,6 +8,7 @@ import copy
 from gym import spaces
 import numpy as np
 import matplotlib.pyplot as plt
+import pkg_resources
 from gym.utils import seeding
 from collections import OrderedDict
 from numpy.random import randint
@@ -45,8 +46,8 @@ class GridworldEnv(gym.Env):
         self.img_shape = [800, 800, 3]  # visualize state
 
         # initialize system state
-        this_file_path = os.path.dirname(os.path.realpath(__file__))
-        self.grid_map_path = os.path.join(this_file_path, 'plan{}.txt'.format(plan))
+        self.grid_map_path = pkg_resources.resource_filename(__name__, 'plan{}.txt'.format(plan))
+        
         self.start_grid_map = self._read_grid_map(self.grid_map_path)  # initial grid map
         self.current_grid_map = copy.deepcopy(self.start_grid_map)  # current grid map
         self.grid_map_shape = self.start_grid_map.shape
