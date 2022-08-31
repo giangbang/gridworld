@@ -4,4 +4,11 @@ setup(
     version = "0.0.1",
     description = ("gridworld environment for RL"),
     packages=find_packages(),
+    install_requires=[
+        "gym",
+        "numpy",
+        "matplotlib"
+    ],
+    package_data={'': ['*.txt']},
+    include_package_data=True,
 )
