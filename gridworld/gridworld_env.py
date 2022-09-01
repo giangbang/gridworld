@@ -184,7 +184,7 @@ class GridworldEnv(gym.Env):
 
         if nxt_agent_state[0] == self.agent_target_state[0] and nxt_agent_state[1] == self.agent_target_state[1]:
             done = True
-            info['success'] = True
+            info['is_success'] = True
             # The final reward is added with the peripheral of the map, 
             # multiplied by the step penalty, this step will ensure that
             # the maximum rewards achievable of all environments configuration 
