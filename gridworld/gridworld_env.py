@@ -140,7 +140,7 @@ class GridworldEnv(gym.Env):
         # Return next observation, reward, finished, success
 
         action = int(action)
-        info = {}
+        info = {'is_success':False}
         done = False
 
         # Penalties
