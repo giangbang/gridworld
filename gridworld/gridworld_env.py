@@ -264,7 +264,7 @@ class GridworldEnv(gym.Env):
                     observation[i * gs0:(i + 1) * gs0, j * gs1:(j + 1) * gs1, k] = this_value
         return (255 * observation).astype(np.uint8)
 
-    def render(self, mode='human', close=False):
+    def render(self, mode='rgb_array', close=False):
         """
         Returns a visualization of the environment according to specification
         """
