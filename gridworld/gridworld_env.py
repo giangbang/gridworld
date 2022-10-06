@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 import pkg_resources
 from gym.utils import seeding
 from collections import OrderedDict
-from numpy.random import randint
 
 
 EMPTY = BLACK = 0
@@ -33,16 +32,22 @@ class GridworldEnv(gym.Env):
     metadata = {'render.modes': ['human', 'rgb_array']}
     num_env = 0
 
-    def __init__(self, plan, generate_goal=True, random_start=True):
+    def __init__(
+            self, 
+            plan: int, 
+            generate_goal: bool=True, 
+            random_start: bool=True,
+            render_mode: str="rgb_array",
+            seed: int=None
+    ):
         super().__init__()
         self.plan = plan
-
-        self.max_step = 10000000
+        self.render_mode = render_mode
+        self.max_step = 100000
         self.actions = [NOOP, UP, DOWN, LEFT, RIGHT]
-        self.inv_actions = [0, 2, 1, 4, 3]
-        self.action_space = spaces.Discrete(4)  # Only consider 4 action, exclude NOOP
+        
+        self.action_space = spaces.Discrete(4, seed=seed)  # Only consider 4 action, exclude NOOP
         self.action_pos_dict = {NOOP: [0, 0], UP: [-1, 0], DOWN: [1, 0], LEFT: [0, -1], RIGHT: [0, 1]}
-
         self.img_shape = [800, 800, 3]  # visualize state
 
         # initialize system state
@@ -52,8 +57,12 @@ class GridworldEnv(gym.Env):
         self.current_grid_map = copy.deepcopy(self.start_grid_map)  # current grid map
         self.grid_map_shape = self.start_grid_map.shape
         self.observation_space = spaces.Box(low=np.array([-1., -1.]),
-                                            high=np.array([1.0, 1.0]))
+                                            high=np.array([1.0, 1.0]),
+                                            seed=seed)
 
+        # seeding
+        self.rng = np.random.default_rng(seed)
+        
         # agent state: start, target, current state
         self.agent_start_state, self.agent_target_state = self._get_agent_start_target_state()
         if random_start:
@@ -70,9 +79,6 @@ class GridworldEnv(gym.Env):
 
         # set other parameters
         self.restart_once_done = False  # restart or not once done
-
-        # set seed
-        self.seed()
 
         # consider total episode reward
         self.episode_total_reward = 0.0
@@ -91,19 +97,14 @@ class GridworldEnv(gym.Env):
         # calculate the length of shortest path from start to goal
         # self.shortest_path_length = self._find_shortest_path_length_start_goal()
         # print('Length of shortest path:', self.shortest_path_length)
-
-    def seed(self, seed=None):
-
-        # Fix seed for reproducibility
-
-        self.np_random, seed = seeding.np_random(seed)
-        return [seed]
     
-
     def generate_task(self):
         n_trial = 1000
         while n_trial >= 0:
-            state = randint(0, self.grid_map_shape[0]), randint(0, self.grid_map_shape[1])
+            state = (
+                self.rng.integers(0, self.grid_map_shape[0]), 
+                self.rng.integers(0, self.grid_map_shape[1])
+            )
             
             if self.start_grid_map[state] != WALL:
                 self.start_grid_map[self.agent_target_state] = EMPTY
@@ -111,16 +112,19 @@ class GridworldEnv(gym.Env):
                 self.start_grid_map[self.agent_target_state] = TARGET
                 return state
             n_trial -= 1
-        print('Cannot find a valid starting position!')
+            
+        raise ValueError(
+            'Cannot find a valid starting position!'
+            ' T to change the map layout, or choose another plan'
+        )
         return None
 
     def get_state(self, coordinates, action, reward):
-
-        # Return a tuple with: current location of the agent in the map
-        # given coordinates
-
+        """
+        Return a tuple with: current location of the agent in the map
+        given coordinates
+        """
         # Normalized for better perform of the NN
-
         return np.asarray([coordinates[0] / self.grid_map_shape[0],
                            coordinates[1] / self.grid_map_shape[1]])*2-1
 
@@ -196,7 +200,12 @@ class GridworldEnv(gym.Env):
         self.episode_total_reward += reward  # Update total reward
         return self.get_state(self.agent_state, action, reward), reward, done, info
 
-    def reset(self):
+    def seed(self, seed=None):
+        self.rng = np.random.default_rng(seed)
+
+    def reset(self, seed=None):
+        if seed is not None:
+            self.seed(seed)
 
         # Return the initial state of the environment
 
@@ -286,7 +295,7 @@ class GridworldEnv(gym.Env):
 
     def get_optimal_reward(self):
         """
-        Get the expected optimal reward
+        Get the expected optimal reward of the current map layout
         """
         ret = []
         for state in self._get_all__empty_coord():
@@ -312,8 +321,11 @@ class GridworldEnv(gym.Env):
         '''
         n_trial = 1000
         while n_trial >= 0:
-            from numpy.random import randint
-            state = randint(0, self.grid_map_shape[0]), randint(0, self.grid_map_shape[1])
+            state = (
+                self.rng.integers(0, self.grid_map_shape[0]), 
+                self.rng.integers(0, self.grid_map_shape[1])
+            )
+            
             if self.start_grid_map[state] == EMPTY:
                 return state
             n_trial -= 1
