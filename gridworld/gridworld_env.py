@@ -38,7 +38,7 @@ class GridworldEnv(gym.Env):
             generate_goal: bool=True, 
             random_start: bool=True,
             render_mode: str="rgb_array",
-            seed: int=None
+            seed: int=None,
     ):
         super().__init__()
         self.plan = plan
@@ -137,7 +137,7 @@ class GridworldEnv(gym.Env):
         self.time += 1
         if done:
             info['rollout_return'] = self.episode_total_reward
-        return next_state, reward, done, info
+        return next_state, reward, done, False, info
 
     def _step(self, action):
 
@@ -198,7 +198,7 @@ class GridworldEnv(gym.Env):
                 self.reset()
 
         self.episode_total_reward += reward  # Update total reward
-        return self.get_state(self.agent_state, action, reward), reward, done, False, info
+        return self.get_state(self.agent_state, action, reward), reward, done, info
 
     def seed(self, seed=None):
         self.rng = np.random.default_rng(seed)
@@ -283,9 +283,9 @@ class GridworldEnv(gym.Env):
             return
 
         img = self._gridmap_to_image()
-        if mode == 'rgb_array':
+        if self.render_mode == 'rgb_array':
             return img
-        elif mode == 'human':
+        elif self.render_mode == 'human':
             plt.figure()
             plt.imshow(img)
             return
