@@ -198,7 +198,7 @@ class GridworldEnv(gym.Env):
                 self.reset()
 
         self.episode_total_reward += reward  # Update total reward
-        return self.get_state(self.agent_state, action, reward), reward, done, info
+        return self.get_state(self.agent_state, action, reward), reward, done, False, info
 
     def seed(self, seed=None):
         self.rng = np.random.default_rng(seed)
@@ -218,7 +218,7 @@ class GridworldEnv(gym.Env):
         self.current_grid_map[self.agent_state] = AGENT
         self.episode_total_reward = 0.0
         self.time = 0
-        return self.get_state(self.agent_state, 0.0, 0.0)
+        return self.get_state(self.agent_state, 0.0, 0.0), {}
 
     def close(self):
         if self.viewer: self.viewer.close()
