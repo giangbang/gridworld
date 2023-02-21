@@ -60,7 +60,7 @@ register(
     kwargs={"plan":31, "generate_goal":False, "random_start":True}
 )
 register(
-    id="Gridworld-Maze3-s-v0",
+    id="Gridworld-Maze3-v0",
     entry_point=__name__ + ":GridworldEnv",
     max_episode_steps=100,
     kwargs={"plan":32, "generate_goal":False, "random_start":True}
