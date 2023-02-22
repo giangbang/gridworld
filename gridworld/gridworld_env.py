@@ -293,7 +293,7 @@ class GridworldEnv(gym.Env):
             return
 
     def get_reward_on_reaching_goal(self):
-        if self.sparse_reward: return 1
+        if self.sparse_reward: return 1 - self.time * 0.01
         return 1.0 + self.penalty_step * np.sum(self.grid_map_shape) * 2
 
     def get_optimal_reward(self):
