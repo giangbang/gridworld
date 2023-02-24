@@ -1,7 +1,7 @@
 # This file is taken from https://github.com/Alfo5123/Robust-Multitask-RL/blob/master/code/envs/gridworld_env.py
 # with some modifications
 
-import gym
+import gymnasium as gym
 import sys
 import os
 import copy

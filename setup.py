@@ -5,7 +5,7 @@ setup(
     description = ("gridworld environment for RL"),
     packages=find_packages(),
     install_requires=[
-        "gym",
+        "gymnasium",
         "numpy",
         "matplotlib"
     ],
