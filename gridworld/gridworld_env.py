@@ -39,11 +39,8 @@ class GridworldEnv(gym.Env):
             random_start: bool=True,
             render_mode: str="rgb_array",
             seed: int=None,
-<<<<<<< HEAD
             old_api=False,
-=======
             sparse_reward: bool= False,
->>>>>>> 9aae6b32c1b7086b345ff37dbf9f962a2833c555
     ):
         super().__init__()
         self.old_api = old_api

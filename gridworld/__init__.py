@@ -17,7 +17,7 @@ register(
     id="Gridworld-4room-v0",
     entry_point=__name__ + ":GridworldEnv",
     max_episode_steps=100,
-    kwargs={"plan":4, "generate_goal":False, "random_start":False}
+    kwargs={"plan":1, "generate_goal":False, "random_start":False}
 )
 register(
     id="Gridworld-H2-v0",

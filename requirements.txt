@@ -1,3 +1,4 @@
-gymnasium
+gymnasium==0.22.*
+gym==0.22.*
 numpy
 matplotlib
