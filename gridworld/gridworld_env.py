@@ -1,7 +1,7 @@
 # This file is taken from https://github.com/Alfo5123/Robust-Multitask-RL/blob/master/code/envs/gridworld_env.py
-# with some modifications 
+# with some modifications
 
-import gym
+import gymnasium as gym
 import sys
 import os
 import copy
@@ -33,13 +33,17 @@ class GridworldEnv(gym.Env):
     num_env = 0
 
     def __init__(
-            self, 
-            plan: int, 
-            generate_goal: bool=True, 
+            self,
+            plan: int,
+            generate_goal: bool=True,
             random_start: bool=True,
             render_mode: str="rgb_array",
             seed: int=None,
+<<<<<<< HEAD
             old_api=False,
+=======
+            sparse_reward: bool= False,
+>>>>>>> 9aae6b32c1b7086b345ff37dbf9f962a2833c555
     ):
         super().__init__()
         self.old_api = old_api
@@ -47,14 +51,15 @@ class GridworldEnv(gym.Env):
         self.render_mode = render_mode
         self.max_step = 100000
         self.actions = [NOOP, UP, DOWN, LEFT, RIGHT]
-        
+        self.sparse_reward = sparse_reward
+
         self.action_space = spaces.Discrete(4, seed=seed)  # Only consider 4 action, exclude NOOP
         self.action_pos_dict = {NOOP: [0, 0], UP: [-1, 0], DOWN: [1, 0], LEFT: [0, -1], RIGHT: [0, 1]}
         self.img_shape = [800, 800, 3]  # visualize state
 
         # initialize system state
         self.grid_map_path = pkg_resources.resource_filename(__name__, 'plan{}.txt'.format(plan))
-        
+
         self.start_grid_map = self._read_grid_map(self.grid_map_path)  # initial grid map
         self.current_grid_map = copy.deepcopy(self.start_grid_map)  # current grid map
         self.grid_map_shape = self.start_grid_map.shape
@@ -64,18 +69,18 @@ class GridworldEnv(gym.Env):
 
         # seeding
         self.rng = np.random.default_rng(seed)
-        
+
         # agent state: start, target, current state
         self.agent_start_state, self.agent_target_state = self._get_agent_start_target_state()
         if random_start:
             self.start_grid_map[self.agent_start_state] = EMPTY
             self.agent_start_state = None
-        
+
         self.agent_state = copy.deepcopy(self.agent_start_state)
-        
+
         if generate_goal:
             self.generate_task()
-        
+
         if self.agent_state is None:
             self.agent_state = self._place_agent()
 
@@ -91,30 +96,30 @@ class GridworldEnv(gym.Env):
         # counter for time step
         self.time = 0
 
-        self.penalty_step = 0.1
-        self.penalty_wall = 0.5
-        
+        self.penalty_step = 0 if sparse_reward else 0.1
+        self.penalty_wall = 0 if sparse_reward else 0.5
+
 
         self.optimal_reward = None
         # calculate the length of shortest path from start to goal
         # self.shortest_path_length = self._find_shortest_path_length_start_goal()
         # print('Length of shortest path:', self.shortest_path_length)
-    
+
     def generate_task(self):
         n_trial = 1000
         while n_trial >= 0:
             state = (
-                self.rng.integers(0, self.grid_map_shape[0]), 
+                self.rng.integers(0, self.grid_map_shape[0]),
                 self.rng.integers(0, self.grid_map_shape[1])
             )
-            
+
             if self.start_grid_map[state] != WALL:
                 self.start_grid_map[self.agent_target_state] = EMPTY
                 self.agent_target_state = state
                 self.start_grid_map[self.agent_target_state] = TARGET
                 return state
             n_trial -= 1
-            
+
         raise ValueError(
             'Cannot find a valid starting position!'
             ' T to change the map layout, or choose another plan'
@@ -167,7 +172,7 @@ class GridworldEnv(gym.Env):
                                 (nxt_agent_state[1] < 0 or nxt_agent_state[1] >= self.grid_map_shape[1])
 
         if next_state_out_of_map:
-            
+
             self.episode_total_reward += reward  # Update total reward
             return self.get_state(self.agent_state, action, reward), reward, False, info
 
@@ -192,9 +197,9 @@ class GridworldEnv(gym.Env):
         if nxt_agent_state[0] == self.agent_target_state[0] and nxt_agent_state[1] == self.agent_target_state[1]:
             done = True
             info['is_success'] = True
-            # The final reward is added with the peripheral of the map, 
+            # The final reward is added with the peripheral of the map,
             # multiplied by the step penalty, this step will ensure that
-            # the maximum rewards achievable of all environments configuration 
+            # the maximum rewards achievable of all environments configuration
             # are scaled suitably with the size of the map
             reward += self.get_reward_on_reaching_goal()
             if self.restart_once_done:
@@ -293,6 +298,7 @@ class GridworldEnv(gym.Env):
             return
 
     def get_reward_on_reaching_goal(self):
+        if self.sparse_reward: return 1 - self.time * 0.01
         return 1.0 + self.penalty_step * np.sum(self.grid_map_shape) * 2
 
     def get_optimal_reward(self):
@@ -324,10 +330,10 @@ class GridworldEnv(gym.Env):
         n_trial = 1000
         while n_trial >= 0:
             state = (
-                self.rng.integers(0, self.grid_map_shape[0]), 
+                self.rng.integers(0, self.grid_map_shape[0]),
                 self.rng.integers(0, self.grid_map_shape[1])
             )
-            
+
             if self.start_grid_map[state] == EMPTY:
                 return state
             n_trial -= 1
