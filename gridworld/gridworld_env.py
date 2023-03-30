@@ -39,8 +39,10 @@ class GridworldEnv(gym.Env):
             random_start: bool=True,
             render_mode: str="rgb_array",
             seed: int=None,
+            old_api=False,
     ):
         super().__init__()
+        self.old_api = old_api
         self.plan = plan
         self.render_mode = render_mode
         self.max_step = 100000
@@ -137,6 +139,7 @@ class GridworldEnv(gym.Env):
         self.time += 1
         if done:
             info['rollout_return'] = self.episode_total_reward
+        if self.old_api: return next_state, reward, done, info
         return next_state, reward, done, False, info
 
     def _step(self, action):
@@ -218,6 +221,7 @@ class GridworldEnv(gym.Env):
         self.current_grid_map[self.agent_state] = AGENT
         self.episode_total_reward = 0.0
         self.time = 0
+        if self.old_api: return self.get_state(self.agent_state, 0.0, 0.0)
         return self.get_state(self.agent_state, 0.0, 0.0), {}
 
     def close(self):
@@ -258,9 +262,7 @@ class GridworldEnv(gym.Env):
         return start_state, target_state
 
     def _gridmap_to_image(self, img_shape=None):
-
         # Return image from the gridmap
-
         if img_shape is None:
             img_shape = self.img_shape
         observation = np.zeros(img_shape, dtype=float)
