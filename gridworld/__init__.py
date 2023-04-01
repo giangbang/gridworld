@@ -29,13 +29,13 @@ register(
     id="Gridworld-H2-v0",
     entry_point=__name__ + ":GridworldEnv",
     max_episode_steps=100,
-    kwargs={"plan":5, "generate_goal":False, "random_start":True, "sparse_reward":True}
+    kwargs={"plan":5, "generate_goal":False, "random_start":True, "old_api":True}
 )
 register(
     id="Gridworld-H3-v0",
     entry_point=__name__ + ":GridworldEnv",
     max_episode_steps=100,
-    kwargs={"plan":6, "generate_goal":False, "random_start":True, "sparse_reward":True}
+    kwargs={"plan":6, "generate_goal":False, "random_start":True, "old_api":True}
 )
 
 # sparse reward environments
@@ -43,19 +43,19 @@ register(
     id="Gridworld-H1-s-v0",
     entry_point=__name__ + ":GridworldEnv",
     max_episode_steps=100,
-    kwargs={"plan":4, "generate_goal":False, "random_start":True, "sparse_reward":True, "sparse_reward":True}
+    kwargs={"plan":4, "generate_goal":False, "random_start":True, "sparse_reward":True, "old_api":True}
 )
 register(
     id="Gridworld-H2-s-v0",
     entry_point=__name__ + ":GridworldEnv",
     max_episode_steps=100,
-    kwargs={"plan":5, "generate_goal":False, "random_start":True, "sparse_reward":True, "sparse_reward":True}
+    kwargs={"plan":5, "generate_goal":False, "random_start":True, "sparse_reward":True, "old_api":True}
 )
 register(
     id="Gridworld-H3-s-v0",
     entry_point=__name__ + ":GridworldEnv",
     max_episode_steps=100,
-    kwargs={"plan":6, "generate_goal":False, "random_start":True, "sparse_reward":True, "sparse_reward":True}
+    kwargs={"plan":6, "generate_goal":False, "random_start":True, "sparse_reward":True, "old_api":True}
 )
 
 # maze environments
