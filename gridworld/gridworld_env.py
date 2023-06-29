@@ -263,7 +263,7 @@ class GridworldEnv(gym.Env):
 
         return start_state, target_state
 
-    def _gridmap_to_image(self, img_shape=None):
+    def _gridmap_to_image(self, render_agent=True, img_shape=None):
         # Return image from the gridmap
         if img_shape is None:
             img_shape = self.img_shape
@@ -273,11 +273,14 @@ class GridworldEnv(gym.Env):
         for i in range(self.current_grid_map.shape[0]):
             for j in range(self.current_grid_map.shape[1]):
                 for k in range(3):
-                    this_value = COLORS[self.current_grid_map[i, j]][k]
+                    color_indx = self.current_grid_map[i, j]
+                    if not render_agent and color_indx == AGENT:
+                        color_indx = EMPTY
+                    this_value = COLORS[color_indx][k]
                     observation[i * gs0:(i + 1) * gs0, j * gs1:(j + 1) * gs1, k] = this_value
         return (255 * observation).astype(np.uint8)
 
-    def render(self, mode='rgb_array', close=False):
+    def render(self, mode='rgb_array', close=False, render_agent=True):
         """
         Returns a visualization of the environment according to specification
         """
@@ -286,7 +289,7 @@ class GridworldEnv(gym.Env):
             plt.close(1)  # Final plot
             return
 
-        img = self._gridmap_to_image()
+        img = self._gridmap_to_image(render_agent=render_agent)
         if self.render_mode == 'rgb_array':
             return img
         elif self.render_mode == 'human':
