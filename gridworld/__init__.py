@@ -17,13 +17,13 @@ register(
     id="Gridworld-4room-v0",
     entry_point=__name__ + ":GridworldEnv",
     max_episode_steps=100,
-    kwargs={"plan":1, "generate_goal":False, "random_start":False, "old_api":True}
+    kwargs={"plan":1, "generate_goal":False, "random_start":False, "old_api":False}
 )
 register(
     id="Gridworld-4room-randomstart-v0",
     entry_point=__name__ + ":GridworldEnv",
     max_episode_steps=100,
-    kwargs={"plan":1, "generate_goal":False, "random_start": True, "old_api":True}
+    kwargs={"plan":1, "generate_goal":False, "random_start": True, "old_api":False}
 )
 register(
     id="Gridworld-H2-v0",
